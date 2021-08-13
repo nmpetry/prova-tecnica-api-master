@@ -1,0 +1,1 @@
+Repositório da resolução do desafio de automação de API.
