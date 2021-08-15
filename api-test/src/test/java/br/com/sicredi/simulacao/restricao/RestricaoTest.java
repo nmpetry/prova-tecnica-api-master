@@ -1,12 +1,18 @@
 package br.com.sicredi.simulacao.restricao;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 public class RestricaoTest {
-	private String uri      = "http://localhost:8080/api/v1/";
-	private String endpoint = "restricoes/";
+
+	@BeforeClass
+	public static void base()
+	{
+		baseURI = "http://localhost:8080/api/v1";
+		basePath = "/restricoes/{cpf}";
+	}
 	
 	@Test
 	public void testGetRestricaoCpfSemRestricao()
@@ -17,8 +23,9 @@ public class RestricaoTest {
 		
 		//Buscar restrição
 		given()
+			.pathParam("cpf", cpf)
 		.when()
-			.get(uri + endpoint +cpf)
+			.get()
 		.then()
 			.statusCode(204);	
 	}
@@ -45,8 +52,9 @@ public class RestricaoTest {
 		
 		//Buscar restrição
 		given()
+			.pathParam("cpf", cpf)
 		.when()
-			.get(uri + endpoint +cpf)
+			.get()
 		.then()
 			.statusCode(200)
 			.body("mensagem", is("O CPF " + cpf + " possui restrição"));

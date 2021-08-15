@@ -1,6 +1,7 @@
 package br.com.sicredi.simulacao.simulacao;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
@@ -10,15 +11,20 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 public class CriarSimulacaoTest {
-
-	private String uri      = "http://localhost:8080/api/v1/";
-	private String endpoint = "simulacoes/";
+	
+	@BeforeClass
+	public static void base()
+	{
+		baseURI = "http://localhost:8080/api/v1";
+		basePath = "/simulacoes/";
+	}
 	
 	@Test
-	public void criarSimulacao()
+	public void testCriarSimulacao()
 	{
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 214411244,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -32,7 +38,7 @@ public class CriarSimulacaoTest {
 			.contentType(ContentType.JSON)
 			.body(body)
 		.when()
-			.post(uri + endpoint)
+			.post()
 		.then()
 			.body("nome", is("José Joseano"))
 			.body("cpf", is("214411244"))
@@ -44,11 +50,12 @@ public class CriarSimulacaoTest {
 	}
 
 	@Test
-	public void criarSimulacaoComEmailInvalido()
+	public void testCriarSimulacaoComEmailInvalido()
 	{
 		String validacaoEmail = "E-mail deve ser um e-mail válido";
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 789456778,\n"
 				+ "  \"email\": \"jegr@a\",\n"
@@ -63,7 +70,7 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint)
+				.post()
 			.then()
 				.statusCode(400)
 				.extract()
@@ -74,11 +81,12 @@ public class CriarSimulacaoTest {
 
 
 	@Test
-	public void criarSimulacaoComCPFEmFormatoErrado()
+	public void testCriarSimulacaoComCPFEmFormatoErrado()
 	{
 		//não existe mensagem de erro
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 789.456.778-22,\n"
 				+ "  \"email\": \"jjr@email.com\",\n"
@@ -92,21 +100,22 @@ public class CriarSimulacaoTest {
 			.contentType(ContentType.JSON)
 			.body(body)
 		.when()
-			.post(uri + endpoint)
+			.post()
 		.then()
 			.statusCode(400);	
 	}
 
 	
 	@Test
-	public void criarSimulacaoSemAlgumasInformacoes()
+	public void testCriarSimulacaoSemAlgumasInformacoes()
 	{
 		String validacaoNome =     "Nome não pode ser vazio";
 		String validacaoCpf =  	   "CPF não pode ser vazio";
 		String validacaoParcelas = "Parcelas não pode ser vazio";
 		String validacaoValor =    "Valor não pode ser vazio";
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				      "{\n"
 					+ "  \n"
 					+ "  \"email\": \"gr@email.com\",\n"
 					+ "  \"seguro\": true\n"
@@ -118,7 +127,7 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint);
+				.post();
 			response.then()
 				.statusCode(400);
 		
@@ -135,11 +144,12 @@ public class CriarSimulacaoTest {
 	
 	
 	@Test
-	public void criarSimulacaoComValorAbaixoDe1000()
+	public void testCriarSimulacaoComValorAbaixoDe1000()
 	{
 		//não existe mensagem de erro
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 745879841,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -153,18 +163,19 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint)
+				.post()
 			.then()
 				.statusCode(400);
 	}
 	
 	@Test
-	public void criarSimulacaoComValorAcimaDe40000()
+	public void testCriarSimulacaoComValorAcimaDe40000()
 	{
 		String validacaoValor = "Valor deve ser menor ou igual a R$ 40.000";
 		
 		//body da simulacao
-		String body = "{\n"
+		String body =
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 67344764,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -179,7 +190,7 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint)
+				.post()
 			.then()
 				.statusCode(400)
 				.extract()
@@ -189,12 +200,13 @@ public class CriarSimulacaoTest {
 	}
 	
 	@Test
-	public void criarSimulacaoComParcelasMenorQue2()
+	public void testCriarSimulacaoComParcelasMenorQue2()
 	{
 		String validacaoParcelas = "Parcelas deve ser igual ou maior que 2";
 		
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 67344764,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -209,7 +221,7 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint)
+				.post()
 			.then()
 				.statusCode(400)
 				.extract()
@@ -219,11 +231,12 @@ public class CriarSimulacaoTest {
 	}
 	
 	@Test
-	public void criarSimulacaoComParcelasMaiorQue48()
+	public void testCriarSimulacaoComParcelasMaiorQue48()
 	{
 		//não existe mensagem de erro
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 412578544,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -237,17 +250,18 @@ public class CriarSimulacaoTest {
 				.contentType(ContentType.JSON)
 				.body(body)
 			.when()
-				.post(uri + endpoint)
+				.post()
 			.then()
 				.statusCode(400);
 	}
 	
 	@Test
-	public void criarSimulacaoCpfDuplicado()
+	public void testCriarSimulacaoCpfDuplicado()
 	{
 		String validacaoCpfDuplicado = "CPF duplicado";
 		//body da simulacao
-		String body = "{\n"
+		String body = 
+				  "{\n"
 				+ "  \"nome\": \"José Joseano\",\n"
 				+ "  \"cpf\": 475841266,\n"
 				+ "  \"email\": \"jj@email.com\",\n"
@@ -261,7 +275,7 @@ public class CriarSimulacaoTest {
 			.contentType(ContentType.JSON)
 			.body(body)
 		.when()
-			.post(uri + endpoint)
+			.post()
 		.then();
 		
 		String erro = 
@@ -269,7 +283,7 @@ public class CriarSimulacaoTest {
 					.contentType(ContentType.JSON)
 					.body(body)
 				.when()
-					.post(uri + endpoint)
+					.post()
 				.then()
 					.statusCode(400)
 					.extract()
